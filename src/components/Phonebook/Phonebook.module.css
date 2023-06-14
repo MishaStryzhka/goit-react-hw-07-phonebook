@@ -1,0 +1,15 @@
+.title {
+    margin: 25px 0;
+}
+
+.contactsList {
+    /* margin-left: 45px; */
+}
+
+.item {
+    border-bottom: 2px solid black;
+    margin-bottom: 10px;
+    width: 300px;
+    display: flex;
+    justify-content: space-between;
+}
