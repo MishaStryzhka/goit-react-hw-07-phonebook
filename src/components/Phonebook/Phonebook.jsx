@@ -2,15 +2,24 @@ import FormContacts from "components/FormContacts/FormContacts";
 import FormFind from "components/FormFind/FormFind";
 import css from './Phonebook.module.css';
 import { useDispatch, useSelector } from "react-redux";
-import { addContacts, deleteContacts } from "redux/contacts/contactsSlice";
-import { setFilter } from "redux/filter/filterSlice";
+import { getContacts } from "redux/selectors";
+import { addContact, fetchContacts } from "redux/operations";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import ItemContact from "components/itemContact/itemContact";
 
 const Phonebook = () => {
 
-    const contacts = useSelector((state) => state.contacts);
-    const filter = useSelector((state) => state.filter);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const filter = searchParams.get("filter")
 
     const dispatch = useDispatch()
+
+    const { contacts, isLoading, isLoadingPost, error } = useSelector(getContacts);
+
+    useEffect(() => {
+        dispatch(fetchContacts());
+      }, [dispatch]);
 
     const onSubmit = (user) => {
         if (contacts && contacts.find(contact => {
@@ -18,23 +27,22 @@ const Phonebook = () => {
             return contact.name.toLowerCase() === normalizeUser
         })) { alert("Даний контакт вже є в телефонній") }
         else {
-            dispatch(addContacts(user))
+            dispatch(addContact(user))
         }
     }
 
     const handleChange = e => {
-        dispatch(setFilter(e.target.value))
-    };
-
-    const handleRemove = e => {
-        dispatch(deleteContacts(e.currentTarget.parentNode.id))
-
+        setSearchParams({ filter: e.target.value })
     };
 
     const getVizibleContacts = () => {
         if (filter) {
             const normalizedFilter = filter.toLowerCase();
-
+            
+            const valueFilter = searchParams.get("filter");
+            if(valueFilter!==filter){
+                setSearchParams({ filter: normalizedFilter })
+            }
             if (contacts) {
                 return contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter))
             };
@@ -48,18 +56,18 @@ const Phonebook = () => {
         <>
             <h1 className={css.title}>Phonebook</h1>
 
-            <FormContacts onSubmit={onSubmit} name />
+            <FormContacts onSubmit={onSubmit} isLoadingPost={isLoadingPost} name />
 
             <h2 className={css.title}>Contacts</h2>
 
             <FormFind handleChange={handleChange} value={filter} />
 
+            {isLoading && !error && <b>Request in progress...</b>} 
+            {error && <b>{error};</b>} 
+
             <ul className={css.contactsList}>
                 {getVizibleContacts().map((contact) =>
-                    <li className={css.item} key={contact.id} id={contact.id}>
-                        {contact.name} {contact.number}
-                        <button type="button" className="btn-close" aria-label="Close" onClick={handleRemove}></button>
-                    </li>
+                    <ItemContact contact={contact} itemStyle={css.item}/>
                 )}
             </ul>
         </>

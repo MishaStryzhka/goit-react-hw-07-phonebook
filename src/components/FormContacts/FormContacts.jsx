@@ -1,20 +1,21 @@
 import PropTypes from 'prop-types';
 import css from './FormContacts.module.css';
 import { useState } from 'react';
+import { FadeLoader } from 'react-spinners';
 
-const FormPhonebook = ({ onSubmit }) => {
+const FormPhonebook = ({ onSubmit, isLoadingPost }) => {
     const [name, setName] = useState("");
-    const [number, setNumber] = useState("")
+    const [phone, setPhone] = useState("")
 
     const handleSubmit = e => {
         e.preventDefault();
-        onSubmit({ name, number });
+        onSubmit({ name, phone });
         reset();
     }
 
     const reset = () => {
         setName("");
-        setNumber("");
+        setPhone("");
     };
 
     return (
@@ -33,18 +34,37 @@ const FormPhonebook = ({ onSubmit }) => {
                     />
                 </label>
                 <label className={css.label}>
-                    <span className={css.labelText}>Number</span>
+                    <span className={css.labelText}>Phone</span>
                     <input
                         type="tel"
-                        name="number"
+                        name="phone"
                         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-                        title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+                        title="Phone Phone must be digits and can contain spaces, dashes, parentheses and can start with +"
                         required
-                        value={number}
-                        onChange={e => setNumber(e.target.value)}
+                        value={phone}
+                        onChange={e => setPhone(e.target.value)}
                     />
                 </label>
-                <button className={css.button} type="submit">Add contact</button>
+                <button className={css.button} type="submit">Add contact 
+                <FadeLoader
+                    loading={isLoadingPost}
+                    size={15}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                    height={7}
+                    margin={-10}
+                    radius={0}
+                    width={2}
+                    style={{
+                        top: 25,
+                        display: "inherit",
+                        position: "absolute",
+                        fontSize: 0,
+                        right: 30,
+                        width: 30,
+                        height: 30}}
+                />
+                </button>
             </form>
         </>
     );
