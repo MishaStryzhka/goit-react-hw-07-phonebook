@@ -11,7 +11,8 @@ import ItemContact from "components/itemContact/itemContact";
 const Phonebook = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const filter = searchParams.get("filter")
+    const filter = searchParams.get("filter") || "";
+    
 
     const dispatch = useDispatch()
 
@@ -67,7 +68,7 @@ const Phonebook = () => {
 
             <ul className={css.contactsList}>
                 {getVizibleContacts().map((contact) =>
-                    <ItemContact contact={contact} itemStyle={css.item}/>
+                    <ItemContact key={contact.id} contact={contact} itemStyle={css.item}/>
                 )}
             </ul>
         </>
